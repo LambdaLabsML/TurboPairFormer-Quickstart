@@ -42,16 +42,17 @@ input including the pair bias, and a DDP consistency check ships with it.
 ## Measured results
 
 Executed on a single [NVIDIA H100 80GB HBM3](https://www.nvidia.com/en-us/data-center/h100/), batch 1, 4 heads, head dimension 32,
-BF16 — full tables and methodology are in the notebook.
+BF16, measured against turbopairformer 0.1.3 — full tables and methodology are in the
+notebook.
 
 Triangle attention vs. stock PyTorch:
 
 | N | forward speedup | fwd+bwd speedup | fwd+bwd peak memory |
 |---:|---:|---:|---:|
-| 256 | 5.0x | 2.8x | 1.18 GB → 0.36 GB |
-| 512 | 7.1x | 3.8x | 8.51 GB → 1.59 GB |
-| 768 | 7.8x | 4.1x | 28.06 GB → 3.73 GB |
-| 1024 | 9.5x | 5.1x | 65.84 GB → 7.39 GB |
+| 256 | 6.9x | 3.1x | 1.18 GB → 0.36 GB |
+| 512 | 10.1x | 4.3x | 8.51 GB → 1.59 GB |
+| 768 | 11.3x | 4.7x | 28.06 GB → 3.73 GB |
+| 1024 | 14.0x | 5.8x | 65.84 GB → 7.39 GB |
 
 TriMul (outgoing, `C_z = C_hidden = 128`) reaches 6.6x forward and 7.0x forward+backward at
 `N = 1024`. Accuracy sits at or below the stock BF16 error against an FP32 reference in
@@ -59,7 +60,7 @@ every case, masked and unmasked — the kernel is not trading precision for spee
 
 ## Requirements
 
-TurboPairFormer 0.1.0 ships one ahead-of-time compiled wheel, and the loader verifies the
+TurboPairFormer 0.1.3 ships one ahead-of-time compiled wheel, and the loader verifies the
 ABI and binary hashes before loading an extension rather than silently recompiling. The
 environment has to match:
 
@@ -79,7 +80,7 @@ conda activate turbopairformer
 export PATH="$CONDA_PREFIX/bin:$PATH"
 hash -r
 
-pip install turbopairformer
+pip install turbopairformer==0.1.3
 
 # To re-run the notebook, from the same environment:
 pip install jupyterlab
@@ -104,6 +105,7 @@ PyTorch fallback:
 
 ## Links
 
+- Paper: [TurboPairFormer: Fast and Stable Protein Folding Model Training with an Optimized Triangle Attention Kernel](https://arxiv.org/abs/2610.05854)
 - PyPI: <https://pypi.org/project/turbopairformer/>
 - Reference architecture: [OpenFold3 Pairformer](https://github.com/aqlaboratory/openfold-3/blob/main/openfold3/core/model/latent/pairformer.py)
 
